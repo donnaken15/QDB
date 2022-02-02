@@ -9,3 +9,4 @@ whatever<br>
 |-------------|-----------------------|
 |donnaken15   |remote program & plugin|
 |adituv       |script decompilation   |
+|nanook       |[queenbee](https://github.com/Nanook/Queen-Bee) |

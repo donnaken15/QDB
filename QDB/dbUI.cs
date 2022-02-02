@@ -166,47 +166,50 @@ namespace QDB
             QBEditor = new PakEditor(QBLoader, false);
             DBGFiles = new PakEditor(QBLoader, true);
             QbFile curQbFile;
+            Scripts.Clear();
             scriptsListWBrkpnts.Items.Clear();
             foreach (string file in QBEditor.QbFilenames)
             {
-                curQbFile = QBEditor.ReadQbFile(file, loadDbgQBFile(file));
-                parseDbg(loadDbgQBFile(file));
-                for (int i = 0; i < curQbFile.Items.Count; i++)
-                {
-                    if (curQbFile.Items[i].QbItemType == QbItemType.SectionScript)
+                try {
+                    curQbFile = QBEditor.ReadQbFile(file, loadDbgQBFile(file));
+                    parseDbg(loadDbgQBFile(file));
+                    for (int i = 0; i < curQbFile.Items.Count; i++)
                     {
-                        QbItemScript testScr = (QbItemScript)curQbFile.Items[i];
-                        ScriptEntity newScrEnt = new ScriptEntity();
-                        newScrEnt.code = testScr.ScriptData;
-                        if (testScr.DebugName != "")
-                            newScrEnt.name = testScr.DebugName;
-                        else
-                            newScrEnt.name = testScr.ItemQbKey.Crc.ToString("X8");
-                        string[] tmpSrc = testScr.Translate(Names).Split('\n');
-                        newScrEnt.ips = new uint[tmpSrc.Length];
-                        newScrEnt.src = new string[tmpSrc.Length];
-                        newScrEnt.extraline = new bool[tmpSrc.Length];
-                        uint j = 0;
-                        foreach (string line in tmpSrc)
+                        if (curQbFile.Items[i].QbItemType == QbItemType.SectionScript)
                         {
-                            try
+                            QbItemScript testScr = (QbItemScript)curQbFile.Items[i];
+                            ScriptEntity newScrEnt = new ScriptEntity();
+                            newScrEnt.code = testScr.ScriptData;
+                            if (testScr.DebugName != "")
+                                newScrEnt.name = testScr.DebugName;
+                            else
+                                newScrEnt.name = testScr.ItemQbKey.Crc.ToString("X8");
+                            string[] tmpSrc = testScr.Translate(Names).Split('\n');
+                            newScrEnt.ips = new uint[tmpSrc.Length];
+                            newScrEnt.src = new string[tmpSrc.Length];
+                            newScrEnt.extraline = new bool[tmpSrc.Length];
+                            uint j = 0;
+                            foreach (string line in tmpSrc)
                             {
-                                newScrEnt.ips[j] = uint.Parse(line.Substring(0, 4), System.Globalization.NumberStyles.HexNumber);
-                                newScrEnt.src[j] = line.Substring(5);
+                                try
+                                {
+                                    newScrEnt.ips[j] = uint.Parse(line.Substring(0, 4), System.Globalization.NumberStyles.HexNumber);
+                                    newScrEnt.src[j] = line.Substring(5);
+                                }
+                                catch
+                                {
+                                    if (j != 0)
+                                        newScrEnt.ips[j] = newScrEnt.ips[j - 1];
+                                    newScrEnt.src[j] = '\t' + line;
+                                    newScrEnt.extraline[j] = true;
+                                }
+                                j++;
                             }
-                            catch
-                            {
-                                if (j != 0)
-                                    newScrEnt.ips[j] = newScrEnt.ips[j - 1];
-                                newScrEnt.src[j] = '\t' + line;
-                                newScrEnt.extraline[j] = true;
-                            }
-                            j++;
+                            Scripts.Add(newScrEnt);
+                            scriptsListWBrkpnts.Items.Add(newScrEnt.name);
                         }
-                        Scripts.Add(newScrEnt);
-                        scriptsListWBrkpnts.Items.Add(newScrEnt.name);
                     }
-                }
+                } catch { }
             }
             brkpnts = new bool[Scripts.Count];
             runGameBtn.Enabled = true;
@@ -553,6 +556,8 @@ namespace QDB
                     ReadCSD();
                 }
             }
+            //if (GH3R)
+                //MessageBox.Show(DebugData.ReadByte(5).ToString());
             //ReadCSD();
         }
 
