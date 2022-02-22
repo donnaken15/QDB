@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ACEDiag));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.ACEnamelbl = new System.Windows.Forms.Label();
             this.scrName = new System.Windows.Forms.TextBox();
@@ -79,15 +78,18 @@
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.label1.Location = new System.Drawing.Point(2, 25);
+            this.label1.Location = new System.Drawing.Point(2, 165);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(271, 54);
+            this.label1.Size = new System.Drawing.Size(271, 44);
             this.label1.TabIndex = 3;
-            this.label1.Text = resources.GetString("label1.Text");
+            this.label1.Text = "Note: This will execute after currently running scripts.\r\nDoing with multiple tim" +
+    "es without continuing or pausing\r\nwill only execute one of these inputted functi" +
+    "ons.";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // nodes
             // 
+            this.nodes.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.nodes.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Raised;
             this.nodes.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             this.nodes.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -103,13 +105,14 @@
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.nodes.DefaultCellStyle = dataGridViewCellStyle1;
-            this.nodes.Location = new System.Drawing.Point(5, 93);
+            this.nodes.Location = new System.Drawing.Point(5, 26);
             this.nodes.MultiSelect = false;
             this.nodes.Name = "nodes";
             this.nodes.RowHeadersVisible = false;
-            this.nodes.Size = new System.Drawing.Size(258, 106);
+            this.nodes.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.nodes.RowTemplate.Height = 19;
+            this.nodes.Size = new System.Drawing.Size(268, 133);
             this.nodes.TabIndex = 4;
-            this.nodes.Visible = false;
             // 
             // Type
             // 
@@ -119,9 +122,7 @@
             this.Type.Items.AddRange(new object[] {
             "Int",
             "Float",
-            "QbKey",
-            "String",
-            "WString"});
+            "QbKey"});
             this.Type.Name = "Type";
             this.Type.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Type.Width = 60;
@@ -144,7 +145,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(275, 79);
+            this.ClientSize = new System.Drawing.Size(275, 211);
             this.Controls.Add(this.nodes);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.executeBtn);

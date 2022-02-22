@@ -320,6 +320,7 @@ namespace QDB
         void addStructToCSD(uint counter, uint entries)
         {
             uint entryIndex = entries;
+            curScrStructs.BeginUpdate();
             for (uint i = 0; i < DebugData.ReadUInt32(counter); i++)
             {
                 uint key = 0, value = 0;
@@ -414,6 +415,7 @@ namespace QDB
                 curScrStructs.Items.Add(listItem);
                 entryIndex += 0x10;
             }
+            curScrStructs.EndUpdate();
         }
 
         // WHY WON'T THIS WORK IN SOME WAY AFTER STOPPING THE GAME
@@ -439,7 +441,7 @@ namespace QDB
                 addStructToCSD(0x1C, 0x20);
                 curScrStructs.Items.Add("QbStruct (0x1C)", 6);
                 addStructToCSD(0x1FFC, 0x2000);
-
+                
                 scrStackLbl.Text = DebugData.ReadUInt32(0xA000 - 4).ToString("X8");
 
                 scriptStack.Items.Clear();
@@ -462,11 +464,19 @@ namespace QDB
                     stackItem = new ListViewItem(stackStrings);
                     scriptStack.Items.Add(stackItem);
                 }
-                CSDflags.Text = "";
-                for (int i = 0; i < 0x14; i++)
+                string tmp = "";
+                for (int i = 0; i < 4; i++)
                 {
-                    CSDflags.Text += DebugData.ReadUInt32(0x500 + (i << 2)).ToString("X8") + '\n';
+                    tmp += DebugData.ReadUInt32(0x500 + (i << 2)).ToString("X8") + ' ';
                 }
+                tmp += '\n' + DebugData.ReadUInt32(0x518).ToString("X8") + '\n';
+                for (int i = 0; i < 4 * 12; i++)
+                {
+                    tmp += DebugData.ReadUInt32(0x520 + (i << 2)).ToString("X8") + ' ';
+                    if (i % 4 == 3)
+                        tmp += '\n';
+                }
+                CSDflags.Text = tmp;
                 QbKey newScr = QbKey.Create(scriptNameAndGoto.Text);
                 if (currentRunningScript != 0x7FFFFFFF && currentRunningScript == scriptsListWBrkpnts.FindItemWithText(scriptNameAndGoto.Text).Index)
                 {
@@ -593,8 +603,62 @@ namespace QDB
             ACEDiag test = new ACEDiag();
             if (test.ShowDialog() == DialogResult.OK)
             {
+                DebugData.Write(0xE9F7, test.paramTypes.Length);
                 DebugData.Write(0xE9FB, (byte)1);
                 DebugData.Write(0xE9FC, test.scrKey.Crc);
+                int off = 0xEA00;
+                int dynaval = 0xEC00;
+                for (int i = 0; i < test.paramTypes.Length && i < 16; i++)
+                {
+                    byte itemType = 0;
+                    DebugData.Write(off + 0x0, test.paramKeys[i].Crc);
+                    //MessageBox.Show(test.paramTypes[i]);
+                    switch (test.paramTypes[i])
+                    {
+                        case "Int":
+                            itemType = 1;
+                            int test2 = 0;
+                            int.TryParse(test.paramVals[i], out test2);
+                            DebugData.Write(off + 0x4, test2);
+                            break;
+                        case "Float":
+                            itemType = 2;
+                            float test3 = 0.0f;
+                            float.TryParse(test.paramVals[i], out test3);
+                            DebugData.Write(off + 0x4, test3);
+                            break;
+                        case "QbKey":
+                            itemType = 13;
+                            DebugData.Write(off + 0x4, QbKey.Create(test.paramVals[i]).Crc);
+                            break;
+                        case "String":
+                            itemType = 3;
+                            DebugData.Write(off + 0x4, dynaval);
+                            string test4 = test.paramVals[i];
+                            for (int j = 0; j < test4.Length; j++)
+                            {
+                                DebugData.Write(dynaval, (byte)test4[j]);
+                                dynaval++;
+                            }
+                            DebugData.Write(dynaval, (byte)0);
+                            dynaval++;
+                            break;
+                        case "WString":
+                            itemType = 4;
+                            DebugData.Write(off + 0x4, dynaval);
+                            string test5 = test.paramVals[i];
+                            for (int j = 0; j < test5.Length; j++)
+                            {
+                                DebugData.Write(dynaval, test5[j]);
+                                dynaval += 2;
+                            }
+                            DebugData.Write(dynaval, (char)0);
+                            dynaval += 2;
+                            break;
+                    }
+                    DebugData.Write(off + 0x8, itemType);
+                    off += 0x10;
+                }
             }
         }
 
