@@ -1,14 +1,8 @@
 ![](QDBicon.png)<br>
 <h2>the definition of convolution</h2>
-inprog<br>
-whatever<br>
+made to be made better
 
-check hooking plugin [here](https://github.com/donnaken15/GH3-Plus/blob/master/src/plugins/QDBhook/QDBhook.cpp)
+the old UI is retired and the debugger has been completely rewritten,
+including the UI now being stored entirely in the plugin
 
-<h1>credits</h1>
-
-|user         |role                   |
-|-------------|-----------------------|
-|donnaken15   |remote program & plugin|
-|adituv       |script decompilation   |
-|nanook       |[queenbee](https://github.com/Nanook/Queen-Bee) |
+[source](https://github.com/donnaken15/GH3-Plus/tree/master/src/plugins/QDB)
